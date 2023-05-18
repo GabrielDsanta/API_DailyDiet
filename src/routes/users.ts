@@ -36,6 +36,11 @@ export async function usersRoutes(server: FastifyInstance) {
     )
 
     server.get('/', async (request, reply) => {
+        let total = 0
+        let inDiet = 0
+        let outDiet = 0
+        let bestSequence = 0
+
         let sessionId = request.cookies.sessionId
 
         if (!sessionId) {
@@ -44,11 +49,31 @@ export async function usersRoutes(server: FastifyInstance) {
             })
         }
 
-        const user = await knex('users').first().where({
+        const meals = await knex('meats').where({
             session_id: sessionId
         })
 
-        return { user }
+        meals.map((item, index) => {
+            if(item.isInDiet === 1){
+                inDiet++
+            }
+
+            if(item.isInDiet === 0){
+                outDiet++
+            }
+
+            if(item.isInDiet === 1 && meals[index + 1].isInDiet === 1){
+                bestSequence++
+            }
+
+            total++
+        })
+
+        if(bestSequence > 0){
+            bestSequence++
+        }
+
+        return { inDiet, outDiet, total, bestSequence }
     }
     )
 }
