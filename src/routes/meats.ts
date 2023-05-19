@@ -18,8 +18,11 @@ export async function meatsRoutes(server: FastifyInstance) {
         let sessionId = request.cookies.sessionId
 
         if (!sessionId) {
-            reply.status(401).send({
-                error: 'Unauthorized to acess.'
+            sessionId = crypto.randomUUID()
+
+            reply.cookie('sessionId', sessionId, {
+                path: '/',
+                maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
             })
         }
 
@@ -30,7 +33,7 @@ export async function meatsRoutes(server: FastifyInstance) {
             description,
             isInDiet,
             time,
-            session_id: sessionId
+            session_id: sessionId,
         })
 
         return reply.status(201).send()
@@ -50,7 +53,7 @@ export async function meatsRoutes(server: FastifyInstance) {
         })
 
         const { name, date, description, isInDiet, time } = createMealBodySchema.parse(request.body)
-        const { mealId } = createMealParamsSchema.parse(request.params) 
+        const { mealId } = createMealParamsSchema.parse(request.params)
 
         let sessionId = request.cookies.sessionId
 
@@ -79,7 +82,7 @@ export async function meatsRoutes(server: FastifyInstance) {
             mealId: z.string(),
         })
 
-        const { mealId } = createMealParamsSchema.parse(request.params) 
+        const { mealId } = createMealParamsSchema.parse(request.params)
 
         let sessionId = request.cookies.sessionId
 
@@ -118,7 +121,7 @@ export async function meatsRoutes(server: FastifyInstance) {
             mealId: z.string(),
         })
 
-        const { mealId } = createMealParamsSchema.parse(request.params) 
+        const { mealId } = createMealParamsSchema.parse(request.params)
 
         let sessionId = request.cookies.sessionId
 
